@@ -9,7 +9,7 @@ This repository documents my work in optimizing compute-bound algorithms for par
 
 | Project | Technology | Hardware | Baseline (CPU) | Optimized (GPU) | Speedup |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Prime Number Search** | OpenACC | NVIDIA A100 | 90.771s (AMD Zen 3) | 1.432s | **63.36x** |
+| **Prime Number Search** | OpenACC | NVIDIA A100 | 90.771s (AMD EPYC) | 1.432s | **63.36x** |
 
 
 ---
