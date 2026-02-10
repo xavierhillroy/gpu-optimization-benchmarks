@@ -14,7 +14,7 @@ This repository documents my work in optimizing compute-bound algorithms for par
 
 ---
 
-## 📂 Project Breakdowns
+## Project Breakdowns
 
 ### 1. Accelerated Prime Number Generation (OpenACC)
 **Goal:** Optimize a compute-heavy nested loop algorithm for identifying prime numbers.
