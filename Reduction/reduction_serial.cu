@@ -1,12 +1,4 @@
-/* CUDA reduction exercise. The serial version (written as *.cu
-file). Use it to compare your CUDA code performance to a serial code
-performance.
 
-To compile on graham, cedar etc:
-  module load cuda
-  nvcc -arch=sm_80 -O2 reduction_serial.cu -o reduction_serial
-
-*/
 
 #include "../part2.h"
 #include "../cuda_errors.h"
@@ -37,7 +29,7 @@ __device__ float d_A[NMAX];
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-// Kernel(s) should go here:
+
 
 
 int main (int argc,char **argv)
