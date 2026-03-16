@@ -9,15 +9,32 @@ This repository documents my work in optimizing compute-bound algorithms for par
 
 | Project | Technology | Hardware | Baseline Time | Optimized Time | Speedup |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Parallel Reduction (Sum)** | CUDA C++ | NVIDIA A100 | 4.687 ms (Atomic) | **0.065 ms** (Hybrid) | **72.1x** |
+| **Traveling Salesman (Monte Carlo)** | CUDA C++ | NVIDIA A100 (1g MIG) | 8.72 s (AMD EPYC)) | **0.0857 s** | **~102x** |
+| **Parallel Reduction (Sum)** | CUDA C++ | NVIDIA A100 | 4.687 ms (Atomic on AMD EPYC)) | **0.065 ms** (Hybrid) | **72.1x** |
 | **Prime Number Search** | OpenACC | NVIDIA A100 | 90.771 s (AMD EPYC) | **1.432 s** | **63.4x** |
-| **Julia Set Visualization** | CUDA C++ | NVIDIA A100 | N/A (Serial CPU) | **Real-time** (2D Grid) | **Accelerated** |
+| **Julia Set Visualization** | CUDA C++ | NVIDIA A100 | N/A (AMD EPYC)) | **Real-time** (2D Grid) | **Accelerated** |
 
 ---
 
 ## Project Breakdowns
 
-### 1. Hybrid Parallel Reduction (CUDA)
+### 1. Traveling Salesman Problem Solver (CUDA)
+**Goal:** Accelerate a brute-force Monte Carlo solver for the TSP to find the shortest itinerary among 11 randomly scattered cities.
+
+**Performance Analysis:**
+* **Serial CPU:** 8.72 s
+* **Optimized GPU:** 0.0857 s (**~102x Speedup**)
+
+**Optimization Strategy:**
+* **Hardware-Specific Tuning (A100):** Tuned grid dimensions specifically for an NVIDIA A100 (1g MIG partition, 14 SMs). Achieved 100% theoretical thread occupancy and perfect wave quantization by sweeping parameters to find the optimal grid shape (`BSIZE=512` and `NBLOCKS=336`).
+* **Shared Memory & Pinned Transfers:** Cached the 2D city distance matrix in fast Shared Memory (`__shared__`) to eliminate expensive global memory reads during the 117-million iteration inner loop. Utilized pinned host memory (`cudaHostRegister`) to maximize PCIe transfer bandwidth.
+* **Bit-Reinterpretation & Lock-Free Logic:** Bypassed CUDA's lack of native floating-point `atomicMin` by leveraging the IEEE-754 bit-reinterpretation trick to execute native hardware integer atomics on floats. Resolved route-copying race conditions using a hardware-level `atomicCAS` lock.
+
+**Code:** [View Source](./cuda-tsp/cuda_tsp.cu)
+
+---
+
+### 2. Hybrid Parallel Reduction (CUDA)
 **Goal:** Optimize a massive array summation by minimizing global memory contention.
 
 **Performance Analysis:**
@@ -38,7 +55,7 @@ A naive "Atomic-Only" approach on the GPU causes massive serialization as thousa
 
 ---
 
-### 2. Julia Set Fractal Visualization (CUDA)
+### 3. Julia Set Fractal Visualization (CUDA)
 **Goal:** Map a pixel-independent mathematical function across a 2D grid structure.
 
 **Optimization Strategy:**
@@ -50,7 +67,7 @@ A naive "Atomic-Only" approach on the GPU causes massive serialization as thousa
 
 ---
 
-### 3. Accelerated Prime Number Generation (OpenACC)
+### 4. Accelerated Prime Number Generation (OpenACC)
 **Goal:** Optimize a compute-heavy nested loop algorithm for identifying prime numbers.
 
 **Optimization Strategy:**
