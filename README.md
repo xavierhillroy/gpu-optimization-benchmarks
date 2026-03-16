@@ -30,7 +30,7 @@ This repository documents my work in optimizing compute-bound algorithms for par
 * **Shared Memory & Pinned Transfers:** Cached the 2D city distance matrix in fast Shared Memory (`__shared__`) to eliminate expensive global memory reads during the 117-million iteration inner loop. Utilized pinned host memory (`cudaHostRegister`) to maximize PCIe transfer bandwidth.
 * **Bit-Reinterpretation & Lock-Free Logic:** Bypassed CUDA's lack of native floating-point `atomicMin` by leveraging the IEEE-754 bit-reinterpretation trick to execute native hardware integer atomics on floats. Resolved route-copying race conditions using a hardware-level `atomicCAS` lock.
 
-**Code:** [View Source](./cuda-tsp/cuda_tsp.cu)
+**Code:** [View Source](./cuda-tsp/tsp.cu)
 
 ---
 
